@@ -30,6 +30,8 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   private DriveMode currentMode = null;
+  private double desiredLeftRPM = 0.0;
+  private double desiredRightRPM = 0.0;
 
   public DriveSubsystem() {
     motorFrontLeft.getConfigurator().apply(genConfig(true));
@@ -60,6 +62,8 @@ public class DriveSubsystem extends SubsystemBase {
     motorFrontRight.setControl(velocityRequest.withVelocity(rightRPM));
 
     currentMode = DriveMode.VELOCITY; // Update current mode
+    desiredLeftRPM = leftRPM;
+    desiredRightRPM = rightRPM;
   }
 
   /** Position PID control (rotations) */
@@ -99,5 +103,9 @@ public class DriveSubsystem extends SubsystemBase {
     Logger.recordOutput("Drive/Right/Voltage", motorFrontRight.getMotorVoltage().getValue());
     Logger.recordOutput("Drive/Right/Current", motorFrontRight.getStatorCurrent().getValue());
     Logger.recordOutput("Drive/Right/OutputPercent", motorFrontRight.getDutyCycle().getValue());
+    
+    // Desired output logs
+    Logger.recordOutput("Drive/Desired/LeftRPM", desiredLeftRPM);
+    Logger.recordOutput("Drive/Desired/RightRPM", desiredRightRPM);
   }
 }

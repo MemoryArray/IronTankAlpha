@@ -9,14 +9,15 @@ public final class consts {
   public static final class CANID {
     public static final int LCanIDci = 0;
     public static final int RCanIDci = 1;
+    public static final int armCanIDci = 2;
   }
 
   // Velocity PID
   public static final class VelPID {
-    public static final double velKPcd = 0.01;
+    public static final double velKPcd = 0.0001;
     public static final double velKIcd = 0.0;
     public static final double velKDcd = 0.0;
-    public static final double velKVcd = 0.12;
+    public static final double velKVcd = 0;
   }
 
   // Position PID

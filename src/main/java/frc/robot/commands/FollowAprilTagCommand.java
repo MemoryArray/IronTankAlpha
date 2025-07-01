@@ -6,8 +6,6 @@ import frc.robot.LimelightHelpers;
 import frc.robot.consts;
 import frc.robot.subsystems.DriveSubsystem;
 
-import static frc.robot.consts.*;
-
 public class FollowAprilTagCommand extends Command {
     private final DriveSubsystem m_driveSubsystem;
     private final PIDController m_turnPid;
