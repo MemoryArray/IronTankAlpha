@@ -1,3 +1,4 @@
+
 package lib.ntext;
 
 import edu.wpi.first.math.Pair;

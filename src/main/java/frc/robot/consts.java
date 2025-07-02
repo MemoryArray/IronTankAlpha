@@ -16,14 +16,13 @@ public final class consts {
 
   @NTParameter(tableName = "PID")
   public final static class PID {
-    // Velocity PID
+  // Velocity PID
     public static final class VelPID {
       public static final double velKPcd = 0.001;
       public static final double velKIcd = 0.0;
       public static final double velKDcd = 0.0;
-      public static final double velKVcd = 0;
     }
-
+  
     // Position PID
     public static final class PosPID {
       public static final double posKPcd = 1.5;

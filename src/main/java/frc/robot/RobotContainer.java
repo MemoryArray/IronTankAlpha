@@ -1,11 +1,14 @@
 package frc.robot;
 
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.ArmSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 
 public class RobotContainer {
   private final DriveSubsystem m_driveSubsystem = new DriveSubsystem();
+  private final ArmSubsystem m_armSubsystem = new ArmSubsystem(); // Add ArmSubsystem instance
 
   // Single Xbox controller for driving
   CommandXboxController mainController = new CommandXboxController(0);
@@ -34,8 +37,15 @@ public class RobotContainer {
 
     m_driveSubsystem.setDefaultCommand(velocityArcadeDrive);
 
-    // Optionally bind other commands here, e.g.:
-    // mainController.a().toggleOnTrue(new SomeOtherCommand(m_driveSubsystem));
+    // Bind the "A" button to reset the arm position
+    mainController.a().onTrue(new InstantCommand(() -> m_armSubsystem.resetArmPosition()));
+
+    // Bind the "X" button to set the arm position to a desired angle (e.g., 45 degrees),
+    // then move the arm back to the previously set armAngle
+    mainController.x().onTrue(new InstantCommand(() -> {
+        m_armSubsystem.setArmPosition(45.0); // Move to the desired angle
+        m_armSubsystem.resetArmPositionToZero(); // Reset the motor position to 0
+    }));
   }
 
   // Deadband helper to avoid drift
