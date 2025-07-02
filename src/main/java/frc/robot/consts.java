@@ -1,5 +1,7 @@
 package frc.robot;
 
+import lib.ntext.NTParameter;
+
 /* const naming standards
  * nameName + c (const) + type
  */
@@ -12,19 +14,22 @@ public final class consts {
     public static final int armCanIDci = 2;
   }
 
-  // Velocity PID
-  public static final class VelPID {
-    public static final double velKPcd = 0.0001;
-    public static final double velKIcd = 0.0;
-    public static final double velKDcd = 0.0;
-    public static final double velKVcd = 0;
-  }
+  @NTParameter(tableName = "PID")
+  public final static class PID {
+    // Velocity PID
+    public static final class VelPID {
+      public static final double velKPcd = 0.001;
+      public static final double velKIcd = 0.0;
+      public static final double velKDcd = 0.0;
+      public static final double velKVcd = 0;
+    }
 
-  // Position PID
-  public static final class PosPID {
-    public static final double posKPcd = 1.5;
-    public static final double posKIcd = 0.0;
-    public static final double posKDcd = 0.05;
+    // Position PID
+    public static final class PosPID {
+      public static final double posKPcd = 1.5;
+      public static final double posKIcd = 0.0;
+      public static final double posKDcd = 0.05;
+    }
   }
 
   // Max values
@@ -32,7 +37,7 @@ public final class consts {
     // TODO: This is an example. Value is untested
     // This value controls the maximum of which the drive motors can run in
     // Real drive RPM = proportion * maxDriveRPMcd, proportion in [0, 1]
-    public static final double maxDriveRPMcd = 1000.0;
+    public static final double maxDriveRPMcd = 100.0;
   }
   
 }
