@@ -12,32 +12,42 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-// TODO: Feedforward PID
-
 public class DriveSubsystem extends SubsystemBase {
-  private final TalonFX motorFrontRight = new TalonFX(consts.CANID.RCanIDci);
-  private final TalonFX motorFrontLeft = new TalonFX(consts.CANID.LCanIDci);
-  private final PIDController pid = new PIDController(consts.PosPID.posKPcd, consts.PosPID.posKIcd, consts.PosPID.posKDcd);
+  private final TalonFX motorFrontRight = new TalonFX(consts.CANID.RCanID);
+  private final TalonFX motorFrontLeft = new TalonFX(consts.CANID.LCanID);
+  private final PIDController pid = new PIDController(consts.PosPID.posKP.get(), consts.PosPID.posKI.get(), consts.PosPID.posKD.get());
+  private final TalonFXConfiguration leftConfig = genConfig(true);
+  private final TalonFXConfiguration rightConfig = genConfig(false);
 
   private final VelocityDutyCycle velocityRequest = new VelocityDutyCycle(0);
-  // private final PositionDutyCycle positionRequest = new PositionDutyCycle(0);
+
+  /** Store cached PIDs */
+  private double cachedVelKP = consts.VelPID.velKP.get();
+  private double cachedVelKI = consts.VelPID.velKI.get();
+  private double cachedVelKD = consts.VelPID.velKD.get();
+  private double cachedPosKP = consts.PosPID.posKP.get();
+  private double cachedPosKI = consts.PosPID.posKI.get();
+  private double cachedPosKD = consts.PosPID.posKD.get();
 
   /** Enum to track which PID mode is active */
-  private enum DriveMode {
-    VELOCITY, POSITION
-  }
-
+  private enum DriveMode {VELOCITY, POSITION}
   private DriveMode currentMode = null;
+
+  /** Desired RPM for left and right motors */
   private double desiredLeftRPM = 0.0;
   private double desiredRightRPM = 0.0;
 
+  /** Initialize motors */
   public DriveSubsystem() {
-    motorFrontLeft.getConfigurator().apply(genConfig(true));
-    motorFrontRight.getConfigurator().apply(genConfig(false));
+    motorFrontLeft.getConfigurator().apply(leftConfig);
+    motorFrontRight.getConfigurator().apply(rightConfig);
   }
 
+  /** Generate a config for a motor */
   public TalonFXConfiguration genConfig(boolean inverted) {
     TalonFXConfiguration config = new TalonFXConfiguration();
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
@@ -48,10 +58,9 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     Slot0Configs slot0 = config.Slot0;
-    slot0.kP = consts.VelPID.velKPcd;
-    slot0.kI = consts.VelPID.velKIcd;
-    slot0.kD = consts.VelPID.velKDcd;
-    slot0.kV = consts.VelPID.velKVcd;
+    slot0.kP = consts.VelPID.velKP.get();
+    slot0.kI = consts.VelPID.velKI.get();
+    slot0.kD = consts.VelPID.velKD.get();
 
     return config;
   }
@@ -78,13 +87,16 @@ public class DriveSubsystem extends SubsystemBase {
 
     // Apply calculated velocities
     motorFrontLeft.setControl(velocityRequest.withVelocity(leftVelocity));
+    // DifferentialDrive
+    // DifferentialDriveKinematics
     motorFrontRight.setControl(velocityRequest.withVelocity(rightVelocity));
 
     currentMode = DriveMode.POSITION; // Update current mode
   }
 
-  @Override
-  public void periodic() {
+  /** Kinematics mode */
+
+  private void logCur() {
     // Log current control mode
     Logger.recordOutput("Drive/Mode", currentMode == null ? "NONE" : currentMode.name());
 
@@ -103,9 +115,53 @@ public class DriveSubsystem extends SubsystemBase {
     Logger.recordOutput("Drive/Right/Voltage", motorFrontRight.getMotorVoltage().getValue());
     Logger.recordOutput("Drive/Right/Current", motorFrontRight.getStatorCurrent().getValue());
     Logger.recordOutput("Drive/Right/OutputPercent", motorFrontRight.getDutyCycle().getValue());
-    
+
     // Desired output logs
     Logger.recordOutput("Drive/Desired/LeftRPM", desiredLeftRPM);
     Logger.recordOutput("Drive/Desired/RightRPM", desiredRightRPM);
   }
-}
+
+  private void updateVelPID() {
+    leftConfig.Slot0.kP = consts.VelPID.velKP.get();
+    leftConfig.Slot0.kI = consts.VelPID.velKI.get();
+    leftConfig.Slot0.kD = consts.VelPID.velKD.get();
+    rightConfig.Slot0.kP = consts.VelPID.velKP.get();
+    rightConfig.Slot0.kI = consts.VelPID.velKI.get();
+    rightConfig.Slot0.kD = consts.VelPID.velKD.get();
+    motorFrontLeft.getConfigurator().apply(leftConfig);
+    motorFrontRight.getConfigurator().apply(rightConfig);
+  }
+
+  private void updatePosPID() {
+    pid.setPID(
+      consts.PosPID.posKP.get(),
+      consts.PosPID.posKI.get(),
+      consts.PosPID.posKD.get()
+    );
+  }
+
+  private void checkPIDUpdate() {
+    if (consts.VelPID.velKP.get() != cachedVelKP || 
+        consts.VelPID.velKI.get() != cachedVelKI || 
+        consts.VelPID.velKD.get() != cachedVelKD) {
+      updateVelPID();
+      cachedVelKP = consts.VelPID.velKP.get();
+      cachedVelKI = consts.VelPID.velKI.get();
+      cachedVelKD = consts.VelPID.velKD.get();
+    }
+    if (consts.PosPID.posKP.get() != cachedPosKP ||
+        consts.PosPID.posKI.get() != cachedPosKI || 
+        consts.PosPID.posKD.get() != cachedPosKD) {
+      updatePosPID();
+      cachedPosKP = consts.PosPID.posKP.get();
+      cachedPosKI = consts.PosPID.posKI.get();
+      cachedPosKD = consts.PosPID.posKD.get();
+    }
+  }
+
+  @Override
+  public void periodic() {
+    logCur();
+    checkPIDUpdate();
+    }
+  }
