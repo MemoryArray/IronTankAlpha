@@ -6,13 +6,14 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
-import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.Logger;
-import frc.robot.consts;
+
+import com.ctre.phoenix6.controls.VelocityDutyCycle;
 
 public class ArmSubsystem extends SubsystemBase {
     private final TalonFX motorArm = new TalonFX(consts.CANID.armCanID);
+    private final VelocityDutyCycle velocityRequest = new VelocityDutyCycle(0);
     public double armAngle; // Current angle of the arm in degrees
     private double targetPosition = 0;
     private double lastKP = consts.ArmPID.armKP.get();
@@ -43,6 +44,10 @@ public class ArmSubsystem extends SubsystemBase {
     public void setArmPosition(double targetAngle) {
         targetPosition = targetAngle;
         motorArm.setControl(new PositionDutyCycle(targetAngle));
+    }
+
+    public void armRPMControl(double rpm) {
+        motorArm.setControl(velocityRequest.withVelocity(rpm));
     }
 
     @Override

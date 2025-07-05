@@ -18,7 +18,7 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    // Default drive command: single joystick arcade drive using velocity control
+    // Arcade drive using velocity control
     Command velocityArcadeDrive =
       m_driveSubsystem.run(() -> {
         double forwardInput = deadBand(-mainController.getLeftY(), 0.1);
@@ -41,14 +41,11 @@ public class RobotContainer {
     // mainController.a().toggleOnTrue(new SomeOtherCommand(m_driveSubsystem));
 
     // Arm control
-    // Bind the "A" button to set the current position as zero (reset encoder)
-    mainController.a().onTrue(new InstantCommand(() -> m_armSubsystem.resetArmPositionToZero()));
+    mainController.a().toggleOnTrue(new InstantCommand(() -> m_armSubsystem.armRPMControl(0)));
 
-    // Bind the "X" button to move the arm to the target position (tunable)
-    mainController.x().onTrue(new InstantCommand(() -> m_armSubsystem.setArmPosition(consts.armTargetAngle.get())));
+    mainController.x().toggleOnTrue(new InstantCommand(() -> m_armSubsystem.armRPMControl(-10)));
 
-    // Bind the "B" button to move the arm back to zero
-    mainController.b().onTrue(new InstantCommand(() -> m_armSubsystem.setArmPosition(0)));
+    mainController.b().toggleOnTrue(new InstantCommand(() -> m_armSubsystem.armRPMControl(10)));
   }
 
   // Deadband helper to avoid drift

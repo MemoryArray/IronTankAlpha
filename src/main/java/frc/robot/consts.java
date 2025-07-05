@@ -16,9 +16,10 @@ public final class consts {
 
   // Velocity PID
   public static final class VelPID {
-    public static final TunableNumber velKP = new TunableNumber("velKP", 0.00225);
+    public static final TunableNumber velKP = new TunableNumber("velKP", 0.002225);
     public static final TunableNumber velKI = new TunableNumber("velKI", 0.0);
     public static final TunableNumber velKD = new TunableNumber("velKD", 0.0);
+    public static final TunableNumber velKS = new TunableNumber("velKS", 0.0);
   }
 
   // Position PID
@@ -43,7 +44,7 @@ public final class consts {
     // TODO: This is an example. Value is untested
     // This value controls the maximum of which the drive motors can run in
     // Real drive RPM = proportion * maxDriveRPMcd, proportion in [0, 1]
-    public static final double maxDriveRPM = 500.0;
+    public static final double maxDriveRPM = 300.0;
   }
   
 }

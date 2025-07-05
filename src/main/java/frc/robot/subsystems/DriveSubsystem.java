@@ -6,14 +6,13 @@ import org.littletonrobotics.junction.Logger;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VelocityDutyCycle;
-// import com.ctre.phoenix6.controls.PositionDutyCycle;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+// import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
+// import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class DriveSubsystem extends SubsystemBase {
@@ -29,6 +28,7 @@ public class DriveSubsystem extends SubsystemBase {
   private double cachedVelKP = consts.VelPID.velKP.get();
   private double cachedVelKI = consts.VelPID.velKI.get();
   private double cachedVelKD = consts.VelPID.velKD.get();
+  private double cachedVelKS = consts.VelPID.velKS.get();
   private double cachedPosKP = consts.PosPID.posKP.get();
   private double cachedPosKI = consts.PosPID.posKI.get();
   private double cachedPosKD = consts.PosPID.posKD.get();
@@ -61,6 +61,7 @@ public class DriveSubsystem extends SubsystemBase {
     slot0.kP = consts.VelPID.velKP.get();
     slot0.kI = consts.VelPID.velKI.get();
     slot0.kD = consts.VelPID.velKD.get();
+    slot0.kS = consts.VelPID.velKS.get();
 
     return config;
   }
@@ -125,9 +126,11 @@ public class DriveSubsystem extends SubsystemBase {
     leftConfig.Slot0.kP = consts.VelPID.velKP.get();
     leftConfig.Slot0.kI = consts.VelPID.velKI.get();
     leftConfig.Slot0.kD = consts.VelPID.velKD.get();
+    leftConfig.Slot0.kS = consts.VelPID.velKS.get();
     rightConfig.Slot0.kP = consts.VelPID.velKP.get();
     rightConfig.Slot0.kI = consts.VelPID.velKI.get();
     rightConfig.Slot0.kD = consts.VelPID.velKD.get();
+    rightConfig.Slot0.kS = consts.VelPID.velKS.get();
     motorFrontLeft.getConfigurator().apply(leftConfig);
     motorFrontRight.getConfigurator().apply(rightConfig);
   }
@@ -143,11 +146,13 @@ public class DriveSubsystem extends SubsystemBase {
   private void checkPIDUpdate() {
     if (consts.VelPID.velKP.get() != cachedVelKP || 
         consts.VelPID.velKI.get() != cachedVelKI || 
-        consts.VelPID.velKD.get() != cachedVelKD) {
+        consts.VelPID.velKD.get() != cachedVelKD ||
+        consts.VelPID.velKS.get() != cachedVelKS) {
       updateVelPID();
       cachedVelKP = consts.VelPID.velKP.get();
       cachedVelKI = consts.VelPID.velKI.get();
       cachedVelKD = consts.VelPID.velKD.get();
+      cachedVelKS = consts.VelPID.velKS.get();
     }
     if (consts.PosPID.posKP.get() != cachedPosKP ||
         consts.PosPID.posKI.get() != cachedPosKI || 
