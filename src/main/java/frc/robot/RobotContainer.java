@@ -2,8 +2,11 @@ package frc.robot;
 
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.commands.ArmRotateCommand;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 public class RobotContainer {
@@ -25,8 +28,8 @@ public class RobotContainer {
         double turnInput = deadBand(mainController.getRightX(), 0.1);
 
         // Convert joystick input [-1..1] to RPM [-MAX_DRIVE_RPM..MAX_DRIVE_RPM]
-        double forwardRPM = forwardInput * consts.Maximums.maxDriveRPM;
-        double turnRPM = turnInput * consts.Maximums.maxDriveRPM;
+        double forwardRPM = forwardInput * consts.Limits.maxDriveRPM;
+        double turnRPM = turnInput * consts.Limits.maxDriveRPM;
 
         // Calculate left and right RPM for arcade drive
         double leftRPM = forwardRPM + turnRPM;
@@ -41,11 +44,10 @@ public class RobotContainer {
     // mainController.a().toggleOnTrue(new SomeOtherCommand(m_driveSubsystem));
 
     // Arm control
-    mainController.a().toggleOnTrue(new InstantCommand(() -> m_armSubsystem.armRPMControl(0)));
-
-    mainController.x().toggleOnTrue(new InstantCommand(() -> m_armSubsystem.armRPMControl(-10)));
-
-    mainController.b().toggleOnTrue(new InstantCommand(() -> m_armSubsystem.armRPMControl(10)));
+    mainController.y().onTrue(new InstantCommand(() -> m_armSubsystem.clearStall()));
+    mainController.b().whileTrue(new ArmRotateCommand(m_armSubsystem, 0.05));
+    mainController.x().whileTrue(new ArmRotateCommand(m_armSubsystem, -0.05));
+    mainController.a().onTrue(new InstantCommand(() -> m_armSubsystem.stall()));
   }
 
   // Deadband helper to avoid drift

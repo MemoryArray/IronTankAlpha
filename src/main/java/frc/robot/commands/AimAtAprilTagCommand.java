@@ -39,7 +39,7 @@ public class AimAtAprilTagCommand extends Command {
         double turningOutput = m_pidController.calculate(tx); // -1.0 to +1.0 output
 
         // Convert to turning RPM (symmetric, in-place turn)
-        double turnRPM = turningOutput * consts.Maximums.maxDriveRPM;
+        double turnRPM = turningOutput * consts.Limits.maxDriveRPM;
 
         double leftRPM = turnRPM;
         double rightRPM = -turnRPM;

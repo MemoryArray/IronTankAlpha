@@ -11,6 +11,8 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 // import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 // import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -23,6 +25,8 @@ public class DriveSubsystem extends SubsystemBase {
   private final TalonFXConfiguration rightConfig = genConfig(false);
 
   private final VelocityDutyCycle velocityRequest = new VelocityDutyCycle(0);
+
+  // Chassis Speed
 
   /** Store cached PIDs */
   private double cachedVelKP = consts.VelPID.velKP.get();

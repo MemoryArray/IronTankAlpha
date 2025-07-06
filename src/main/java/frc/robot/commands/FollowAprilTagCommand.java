@@ -11,6 +11,7 @@ public class FollowAprilTagCommand extends Command {
     private final PIDController m_turnPid;
     private final PIDController m_distancePid;
     private static final String LIMELIGHT_NAME = "limelight";
+    
 
     public FollowAprilTagCommand(DriveSubsystem driveSubsystem) {
         m_driveSubsystem = driveSubsystem;
@@ -52,8 +53,8 @@ public class FollowAprilTagCommand extends Command {
         }
 
         // Convert outputs (assumed range roughly -1 to 1) to RPM
-        double forwardRPM = forwardOutput * consts.Maximums.maxDriveRPM;
-        double turnRPM = turningOutput * consts.Maximums.maxDriveRPM;
+        double forwardRPM = forwardOutput * consts.Limits.maxDriveRPM;
+        double turnRPM = turningOutput * consts.Limits.maxDriveRPM;
 
         // Calculate left and right RPMs for arcade drive
         double leftRPM = forwardRPM + turnRPM;
